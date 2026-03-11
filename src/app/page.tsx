@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { Timer, Clock, BarChart2, History } from "lucide-react";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Nav */}
