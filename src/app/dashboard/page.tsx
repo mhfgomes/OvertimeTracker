@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { format, addMonths, subMonths } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
@@ -18,13 +18,20 @@ function toYearMonth(date: Date): string {
 }
 
 export default function DashboardPage() {
+  const { isAuthenticated } = useConvexAuth();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const yearMonth = toYearMonth(selectedMonth);
 
-  const entries = useQuery(api.entries.getEntriesForMonth, { yearMonth });
-  const recentEntries = useQuery(api.entries.getRecentEntries, {});
+  const entries = useQuery(
+    api.entries.getEntriesForMonth,
+    isAuthenticated ? { yearMonth } : "skip"
+  );
+  const recentEntries = useQuery(
+    api.entries.getRecentEntries,
+    isAuthenticated ? {} : "skip"
+  );
 
-  const isLoading = entries === undefined || recentEntries === undefined;
+  const isLoading = !isAuthenticated || entries === undefined || recentEntries === undefined;
   const isCurrentMonth =
     toYearMonth(addMonths(selectedMonth, 1)) > toYearMonth(new Date());
 
