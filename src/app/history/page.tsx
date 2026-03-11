@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Doc } from "../../../convex/_generated/dataModel";
 import { AppShell } from "@/components/layout/AppShell";
@@ -15,7 +15,8 @@ type SortKey = "date" | "hours";
 type SortDir = "asc" | "desc";
 
 export default function HistoryPage() {
-  const allEntries = useQuery(api.entries.getAllEntries, {});
+  const { isAuthenticated } = useConvexAuth();
+  const allEntries = useQuery(api.entries.getAllEntries, isAuthenticated ? {} : "skip");
 
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
